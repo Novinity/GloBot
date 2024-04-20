@@ -14,7 +14,11 @@ namespace DiscordBotTest {
         public static async Task PlaySong(string query, VoiceNextConnection connection) {
             // Windows audio playing
 
-            /*var ffmpeg = Process.Start(new ProcessStartInfo {
+            /*if (!File.Exists("yt-dlp.exe"))
+                await YoutubeDLSharp.Utils.DownloadYtDlp();
+            if (!File.Exists("ffmpeg.exe"))
+                await YoutubeDLSharp.Utils.DownloadFFmpeg();
+            var ffmpeg = Process.Start(new ProcessStartInfo {
                 FileName = "cmd.exe",
                 Arguments = $"/C yt-dlp.exe --default-search ytsearch -o - \"{query}\" | ffmpeg -i pipe:0 -ac 2 -f s16le -ar 48000 pipe:1",
                 RedirectStandardOutput = true,

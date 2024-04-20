@@ -14,13 +14,16 @@ using System;
 
 namespace DiscordBotTest {
     internal class SlashCommands : ApplicationCommandModule {
-        [SlashCommand("ping", "Responds with pong!")]
-        public async Task PingCommand(InteractionContext ctx) => await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent("Pong!"));
-
         [SlashCommand("help", "Get a list of commands")]
         public async Task HelpCommand(InteractionContext ctx, [Option("command", "The specific command you want help with")] string command = "") {
             if (DataHolder.DevModeEnabled && !DataHolder.AuthorizedServers.Contains(ctx.Guild.Id)) {
                 DataHolder.ShowDevMessage(ctx);
+                return;
+            }
+
+            if (DataHolder.DisabledCommands.Contains(ctx.CommandName)) {
+                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                    new DiscordInteractionResponseBuilder().WithContent("This command is currently disabled.").AsEphemeral(true));
                 return;
             }
 
@@ -132,6 +135,12 @@ namespace DiscordBotTest {
                 return;
             }
 
+            if (DataHolder.DisabledCommands.Contains(ctx.CommandName)) {
+                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                    new DiscordInteractionResponseBuilder().WithContent("This command is currently disabled.").AsEphemeral(true));
+                return;
+            }
+
             // Get the user's current voice channel
             DiscordChannel targetChannel;
             try {
@@ -154,6 +163,12 @@ namespace DiscordBotTest {
         public async Task LeaveCommand(InteractionContext ctx) {
             if (DataHolder.DevModeEnabled && !DataHolder.AuthorizedServers.Contains(ctx.Guild.Id)) {
                 DataHolder.ShowDevMessage(ctx);
+                return;
+            }
+
+            if (DataHolder.DisabledCommands.Contains(ctx.CommandName)) {
+                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                    new DiscordInteractionResponseBuilder().WithContent("This command is currently disabled.").AsEphemeral(true));
                 return;
             }
 
@@ -189,6 +204,12 @@ namespace DiscordBotTest {
         public async Task PlayCommand(InteractionContext ctx, [Option("query", "Query to search")] string query) {
             if (DataHolder.DevModeEnabled && !DataHolder.AuthorizedServers.Contains(ctx.Guild.Id)) {
                 DataHolder.ShowDevMessage(ctx);
+                return;
+            }
+
+            if (DataHolder.DisabledCommands.Contains(ctx.CommandName)) {
+                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                    new DiscordInteractionResponseBuilder().WithContent("This command is currently disabled.").AsEphemeral(true));
                 return;
             }
 
@@ -274,6 +295,12 @@ namespace DiscordBotTest {
                 return;
             }
 
+            if (DataHolder.DisabledCommands.Contains(ctx.CommandName)) {
+                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                    new DiscordInteractionResponseBuilder().WithContent("This command is currently disabled.").AsEphemeral(true));
+                return;
+            }
+
             if (Program.Client.GetVoiceNext().GetConnection(ctx.Guild) == null) {
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
                     new DiscordInteractionResponseBuilder().WithContent("I am not currently in a voice channel."));
@@ -305,6 +332,12 @@ namespace DiscordBotTest {
         public async Task QueueCommand(InteractionContext ctx) {
             if (DataHolder.DevModeEnabled && !DataHolder.AuthorizedServers.Contains(ctx.Guild.Id)) {
                 DataHolder.ShowDevMessage(ctx);
+                return;
+            }
+
+            if (DataHolder.DisabledCommands.Contains(ctx.CommandName)) {
+                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                    new DiscordInteractionResponseBuilder().WithContent("This command is currently disabled.").AsEphemeral(true));
                 return;
             }
 
@@ -438,6 +471,12 @@ namespace DiscordBotTest {
                 return;
             }
 
+            if (DataHolder.DisabledCommands.Contains(ctx.CommandName)) {
+                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                    new DiscordInteractionResponseBuilder().WithContent("This command is currently disabled.").AsEphemeral(true));
+                return;
+            }
+
             if (Program.Client.GetVoiceNext().GetConnection(ctx.Guild) == null) {
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
                     new DiscordInteractionResponseBuilder().WithContent("I am not currently in a voice channel."));
@@ -498,11 +537,32 @@ namespace DiscordBotTest {
                 return;
             }
 
+            if (DataHolder.DisabledCommands.Contains(ctx.CommandName)) {
+                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                    new DiscordInteractionResponseBuilder().WithContent("This command is currently disabled.").AsEphemeral(true));
+                return;
+            }
+
             if (Program.Client.GetVoiceNext().GetConnection(ctx.Guild) == null) {
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
                     new DiscordInteractionResponseBuilder().WithContent("I am not currently in a voice channel."));
                 return;
             }
+            DiscordChannel channel;
+            try {
+                channel = ctx.Member.VoiceState.Channel;
+            }
+            catch (Exception e) {
+                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                   new DiscordInteractionResponseBuilder().WithContent("You are not currently in my voice channel."));
+                return;
+            }
+            if (channel != Program.Client.GetVoiceNext().GetConnection(ctx.Guild).TargetChannel) {
+                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                    new DiscordInteractionResponseBuilder().WithContent("You are not currently in a voice channel."));
+                return;
+            }
+
             if (!ctx.Member.Permissions.HasPermission(Permissions.MuteMembers)) {
                 bool allowed = false;
                 foreach (DiscordRole role in ctx.Member.Roles) {
@@ -538,9 +598,29 @@ namespace DiscordBotTest {
                 return;
             }
 
+            if (DataHolder.DisabledCommands.Contains(ctx.CommandName)) {
+                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                    new DiscordInteractionResponseBuilder().WithContent("This command is currently disabled.").AsEphemeral(true));
+                return;
+            }
+
             if (Program.Client.GetVoiceNext().GetConnection(ctx.Guild) == null) {
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
                     new DiscordInteractionResponseBuilder().WithContent("I am not currently in a voice channel."));
+                return;
+            }
+            DiscordChannel channel;
+            try {
+                channel = ctx.Member.VoiceState.Channel;
+            }
+            catch (Exception e) {
+                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                   new DiscordInteractionResponseBuilder().WithContent("You are not currently in my voice channel."));
+                return;
+            }
+            if (channel != Program.Client.GetVoiceNext().GetConnection(ctx.Guild).TargetChannel) {
+                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                    new DiscordInteractionResponseBuilder().WithContent("You are not currently in a voice channel."));
                 return;
             }
 
@@ -573,11 +653,32 @@ namespace DiscordBotTest {
                 return;
             }
 
+            if (DataHolder.DisabledCommands.Contains(ctx.CommandName)) {
+                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                    new DiscordInteractionResponseBuilder().WithContent("This command is currently disabled.").AsEphemeral(true));
+                return;
+            }
+
             if (Program.Client.GetVoiceNext().GetConnection(ctx.Guild) == null) {
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
                     new DiscordInteractionResponseBuilder().WithContent("I am not currently in a voice channel."));
                 return;
             }
+            DiscordChannel channel;
+            try {
+                channel = ctx.Member.VoiceState.Channel;
+            }
+            catch (Exception _) {
+                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                   new DiscordInteractionResponseBuilder().WithContent("You are not currently in my voice channel."));
+                return;
+            }
+            if (channel != Program.Client.GetVoiceNext().GetConnection(ctx.Guild).TargetChannel) {
+                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                    new DiscordInteractionResponseBuilder().WithContent("You are not currently in a voice channel."));
+                return;
+            }
+
             DataHolder.UpdateLastSpokenChannel(ctx.Channel);
             VoiceNextConnection sink = Program.Client.GetVoiceNext().GetConnection(ctx.Guild);
             if (!QueueManager.paused.Contains(ctx.Guild)) {
@@ -598,11 +699,32 @@ namespace DiscordBotTest {
                 return;
             }
 
+            if (DataHolder.DisabledCommands.Contains(ctx.CommandName)) {
+                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                    new DiscordInteractionResponseBuilder().WithContent("This command is currently disabled.").AsEphemeral(true));
+                return;
+            }
+
             if (Program.Client.GetVoiceNext().GetConnection(ctx.Guild) == null) {
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
                     new DiscordInteractionResponseBuilder().WithContent("I am not currently in a voice channel."));
                 return;
             }
+            DiscordChannel channel;
+            try {
+                channel = ctx.Member.VoiceState.Channel;
+            }
+            catch (Exception _) {
+                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                   new DiscordInteractionResponseBuilder().WithContent("You are not currently in my voice channel."));
+                return;
+            }
+            if (channel != Program.Client.GetVoiceNext().GetConnection(ctx.Guild).TargetChannel) {
+                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                    new DiscordInteractionResponseBuilder().WithContent("You are not currently in a voice channel."));
+                return;
+            }
+
             DataHolder.UpdateLastSpokenChannel(ctx.Channel);
             VoiceNextConnection sink = Program.Client.GetVoiceNext().GetConnection(ctx.Guild);
             if (QueueManager.paused.Contains(ctx.Guild)) {
@@ -621,6 +743,12 @@ namespace DiscordBotTest {
         public async Task ClearQueueCommand(InteractionContext ctx) {
             if (DataHolder.DevModeEnabled && !DataHolder.AuthorizedServers.Contains(ctx.Guild.Id)) {
                 DataHolder.ShowDevMessage(ctx);
+                return;
+            }
+
+            if (DataHolder.DisabledCommands.Contains(ctx.CommandName)) {
+                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                    new DiscordInteractionResponseBuilder().WithContent("This command is currently disabled.").AsEphemeral(true));
                 return;
             }
 
@@ -657,6 +785,101 @@ namespace DiscordBotTest {
             QueueManager.ClearQueue(ctx.Guild);
             await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
                     new DiscordInteractionResponseBuilder().WithContent("Cleared the queue."));
+        }
+
+        [SlashCommand("loopqueue", "Loop the current queue")]
+        public async Task LoopQueueCommand(InteractionContext ctx) {
+            if (DataHolder.DevModeEnabled && !DataHolder.AuthorizedServers.Contains(ctx.Guild.Id)) {
+                DataHolder.ShowDevMessage(ctx);
+                return;
+            }
+
+            if (DataHolder.DisabledCommands.Contains(ctx.CommandName)) {
+                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                    new DiscordInteractionResponseBuilder().WithContent("This command is currently disabled.").AsEphemeral(true));
+                return;
+            }
+
+            if (Program.Client.GetVoiceNext().GetConnection(ctx.Guild) == null) {
+                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                    new DiscordInteractionResponseBuilder().WithContent("I am not currently in a voice channel."));
+                return;
+            }
+            DiscordChannel channel;
+            try {
+                channel = ctx.Member.VoiceState.Channel;
+            }
+            catch (Exception e) {
+                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                   new DiscordInteractionResponseBuilder().WithContent("You are not currently in my voice channel."));
+                return;
+            }
+            if (channel != Program.Client.GetVoiceNext().GetConnection(ctx.Guild).TargetChannel) {
+                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                    new DiscordInteractionResponseBuilder().WithContent("You are not currently in a voice channel."));
+                return;
+            }
+
+            DataHolder.UpdateLastSpokenChannel(ctx.Channel);
+
+            if (!QueueManager.LoopQueue) {
+                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                    new DiscordInteractionResponseBuilder().WithContent("🔁 Looping the queue!"));
+            } else {
+                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                    new DiscordInteractionResponseBuilder().WithContent("▶️ Stopped looping the queue."));
+            }
+
+            QueueManager.LoopQueue = !QueueManager.LoopQueue;
+            QueueManager.LoopSong = false;
+        }
+
+        [SlashCommand("loopsong", "Loop the current song")]
+        public async Task LoopSongCommand(InteractionContext ctx) {
+            if (DataHolder.DevModeEnabled && !DataHolder.AuthorizedServers.Contains(ctx.Guild.Id)) {
+                DataHolder.ShowDevMessage(ctx);
+                return;
+            }
+
+            if (DataHolder.DisabledCommands.Contains(ctx.CommandName)) {
+                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                    new DiscordInteractionResponseBuilder().WithContent("This command is currently disabled.").AsEphemeral(true));
+                return;
+            }
+
+            if (Program.Client.GetVoiceNext().GetConnection(ctx.Guild) == null) {
+                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                    new DiscordInteractionResponseBuilder().WithContent("I am not currently in a voice channel."));
+                return;
+            }
+            DiscordChannel channel;
+            try {
+                channel = ctx.Member.VoiceState.Channel;
+            }
+            catch (Exception e) {
+                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                   new DiscordInteractionResponseBuilder().WithContent("You are not currently in my voice channel."));
+                return;
+            }
+            if (channel != Program.Client.GetVoiceNext().GetConnection(ctx.Guild).TargetChannel) {
+                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                    new DiscordInteractionResponseBuilder().WithContent("You are not currently in a voice channel."));
+                return;
+            }
+
+            DataHolder.UpdateLastSpokenChannel(ctx.Channel);
+
+            if (!QueueManager.LoopSong) {
+                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                    new DiscordInteractionResponseBuilder().WithContent("🔂 Looping the song!"));
+            }
+            else {
+                await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
+                    new DiscordInteractionResponseBuilder().WithContent("▶️ Stopped looping the song."));
+            }
+
+            QueueManager.LoopSong = !QueueManager.LoopSong;
+            QueueManager.LoopQueue = false;
         }
     }
 }

@@ -7,12 +7,16 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using System;
+using System.ComponentModel.Design;
 
 namespace DiscordBotTest {
     internal class QueueManager {
         public static Dictionary<DiscordGuild, List<Video>> queues = new Dictionary<DiscordGuild, List<Video>>();
         public static Dictionary<DiscordGuild, int> voteSkips = new Dictionary<DiscordGuild, int>();
         public static List<DiscordGuild> paused = new List<DiscordGuild>();
+
+        public static bool LoopQueue = false;
+        public static bool LoopSong = false;
 
         public static void CreateQueue(DiscordGuild guild) {
             queues[guild] = new List<Video>();
@@ -24,9 +28,10 @@ namespace DiscordBotTest {
 
             while (queue.Count > 0) {
                 Video video = queue.First();
-                await new DiscordMessageBuilder()
-                    .WithContent($"Now playing [{video.Title}]({video.Url}) - {AbstractFunctions.FormatSeconds((float)video.Duration.Value.TotalSeconds)}")
-                    .SendAsync(channel);
+                if (!LoopSong)
+                    await new DiscordMessageBuilder()
+                        .WithContent($"Now playing [{video.Title}]({video.Url}) - {AbstractFunctions.FormatSeconds((float)video.Duration.Value.TotalSeconds)}")
+                        .SendAsync(channel);
 
                 var voiceNext = Program.Client.GetVoiceNext();
                 var voiceNextConnection = voiceNext.GetConnection(guild);
@@ -67,6 +72,15 @@ namespace DiscordBotTest {
         }
 
         public static void MoveQueueUp(DiscordGuild guild) {
+            if (LoopQueue && LoopSong) {
+                LoopSong = false;
+                LoopQueue = false;
+            }
+            if (LoopQueue) {
+                queues[guild].Add(queues[guild][0]);
+            } else if (LoopSong) {
+                return;
+            }
             queues[guild].RemoveAt(0);
         }
 
@@ -78,6 +92,9 @@ namespace DiscordBotTest {
                 paused.Remove(guild);
             if (AudioManager.ctss.ContainsKey(guild))
                 AudioManager.ctss.Remove(guild);
+
+            LoopQueue = false;
+            LoopSong = false;
         }
 
         public static List<Video> GetQueue(DiscordGuild guild) {

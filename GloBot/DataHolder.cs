@@ -10,7 +10,7 @@ namespace DiscordBotTest {
         };
 
         public static List<string> GeneralCommands = new List<string>() {
-            "join", "leave", "play", "queue", "skip", "stop", "remove", "pause", "resume", "clearqueue"
+            "join", "leave", "play", "queue", "skip", "stop", "remove", "pause", "resume", "clearqueue", "loopqueue", "loopsong"
         };
 
         public static List<string> FullCommandList = AdminCommands.Concat(GeneralCommands).ToList();
@@ -26,6 +26,8 @@ namespace DiscordBotTest {
             { "pause", new CommandDescription(null, new[] { "Must be in a voice channel", "A song must be currently playing", "Must be in the same voice channel as me" }) },
             { "resume", new CommandDescription(null, new[] { "Must be in a voice channel", "A song must be currently paused", "Must be in the same voice channel as me" }) },
             { "clearqueue", new CommandDescription(null, new[] { "Must be in a voice channel", "The queue must not be empty", "Must be in the same voice channel as me" }) },
+            { "loopqueue", new CommandDescription(null, new[] { "Must be in a voice channel", "The queue must not be empty", "Must be in the same voice channel as me" }) },
+            { "loopsong", new CommandDescription(null, new[] { "Must be in a voice channel", "The queue must not be empty", "Must be in the same voice channel as me" }) },
         };
 
         public static Dictionary<DiscordGuild, DiscordChannel> lastSpokenChannels = new Dictionary<DiscordGuild, DiscordChannel>();
@@ -34,6 +36,10 @@ namespace DiscordBotTest {
             910992098537402429,
             1214175327597891594,
             1175188756681212017
+        };
+
+        public static List<string> DisabledCommands = new List<string>() {
+            "pause", "resume"
         };
 
         public static bool DevModeEnabled = true;

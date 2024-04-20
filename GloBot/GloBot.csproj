@@ -4,6 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net4.7</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
+	  <LangVersion>10.0</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
