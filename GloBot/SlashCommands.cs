@@ -266,7 +266,14 @@ namespace DiscordBotTest {
                     }
 
                     await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Added all videos from {query} to the queue."));
-                    if (shouldPlayAfter) await QueueManager.PlayQueue(ctx.Guild, ctx.Channel);
+                    if (shouldPlayAfter) {
+                        if (QueueManager.GetQueue(ctx.Guild).Count == 0) {
+                            while(QueueManager.GetQueue(ctx.Guild).Count == 0) {
+                                await Task.Delay(25);
+                            }
+                        }
+                        await QueueManager.PlayQueue(ctx.Guild, ctx.Channel);
+                    }
                     return;
 
                 }

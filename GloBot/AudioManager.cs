@@ -57,6 +57,7 @@ namespace DiscordBotTest {
         }
 
         public static void CancelStream(DiscordGuild guild) {
+            if (!ctss.ContainsKey(guild)) return;
             ctss[guild].Cancel();
         }
     }
