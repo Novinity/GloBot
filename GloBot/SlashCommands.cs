@@ -1,26 +1,16 @@
-﻿using AngleSharp.Dom;
-using DSharpPlus;
+﻿using DSharpPlus;
 using DSharpPlus.Entities;
-using DSharpPlus.Interactivity.EventHandling;
 using DSharpPlus.Interactivity.Extensions;
-using DSharpPlus.Net;
 using DSharpPlus.SlashCommands;
 using DSharpPlus.VoiceNext;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Net.Http;
-using System.Security.Policy;
-using System.Threading;
-using System.Threading.Tasks;
-using YoutubeDLSharp;
-using YoutubeDLSharp.Metadata;
 using YoutubeExplode;
 using YoutubeExplode.Common;
 using YoutubeExplode.Playlists;
+using YoutubeExplode.Videos;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Linq;
+using System;
 
 namespace DiscordBotTest {
     internal class SlashCommands : ApplicationCommandModule {
@@ -85,10 +75,9 @@ namespace DiscordBotTest {
 
                 ctx.Client.ComponentInteractionCreated += async (client, e) => {
                     if (e.Id == allCommandsId) {
-                        await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder()
+                        await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder()
                             .AddEmbed(allCommandsEmbed)
                             .AsEphemeral(true));
-                        await e.Interaction.CreateResponseAsync(InteractionResponseType.DeferredMessageUpdate);
                     }
                 };
 
@@ -106,7 +95,7 @@ namespace DiscordBotTest {
                     .AddField("Requirements", requirements)
                     ).AddComponents(new DiscordComponent[] {
                         new DiscordButtonComponent(ButtonStyle.Success, allCommandsId, "View All Commands"),
-                        new DiscordLinkButtonComponent("https://glo-bot-site.vercel.app/", "Dashboard"),
+                        new DiscordLinkButtonComponent("https://dashboard.glo-bot.site/", "Dashboard"),
                         new DiscordLinkButtonComponent("https://discord.com/oauth2/authorize?client_id=1229730016359878727&permissions=2721115200&scope=bot", "Invite Me")
                     }));
 
@@ -116,15 +105,14 @@ namespace DiscordBotTest {
             var viewAllCommandsId = "view_all_commands_" + Guid.NewGuid().ToString();
 
             var viewAllCommandsButton = new DiscordButtonComponent(ButtonStyle.Success, viewAllCommandsId, "View All Commands");
-            var dashboardLinkButton = new DiscordLinkButtonComponent("https://glo-bot-site.vercel.app/", "Dashboard");
+            var dashboardLinkButton = new DiscordLinkButtonComponent("https://dashboard.glo-bot.site/", "Dashboard");
             var inviteMeLinkButton = new DiscordLinkButtonComponent("https://discord.com/oauth2/authorize?client_id=1229730016359878727&permissions=2721115200&scope=bot", "Invite Me");
 
             ctx.Client.ComponentInteractionCreated += async (client, e) => {
                 if (e.Id == viewAllCommandsId) {
-                    await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder()
+                    await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder()
                         .AddEmbed(allCommandsEmbed)
                         .AsEphemeral(true));
-                    await e.Interaction.CreateResponseAsync(InteractionResponseType.DeferredMessageUpdate);
                 }
             };
 
@@ -330,8 +318,8 @@ namespace DiscordBotTest {
                     new DiscordInteractionResponseBuilder().WithContent($"Fetching, this may take a moment..."));
 
             string final = "";
-            List<VideoData> queue = QueueManager.GetQueue(ctx.Guild);
-            List<List<VideoData>> paginatedQueue = QueueManager.GetPaginatedQueue(ctx.Guild);
+            List<Video> queue = QueueManager.GetQueue(ctx.Guild);
+            List<List<Video>> paginatedQueue = QueueManager.GetPaginatedQueue(ctx.Guild);
 
             DiscordEmbedBuilder embed = new DiscordEmbedBuilder {
                 Color = DiscordColor.Lilac,
@@ -353,7 +341,7 @@ namespace DiscordBotTest {
                 await tempMsgBuilder.SendAsync(ctx.Channel);
                 return;
             } else if (queue.Count == 1) {
-                embed.AddField("Now Playing", $"[{queue[0].Title}]({queue[0].Url}) - {AbstractFunctions.FormatSeconds((float)queue[0].Duration)}", false);
+                embed.AddField("Now Playing", $"[{queue[0].Title}]({queue[0].Url}) - {AbstractFunctions.FormatSeconds((float)queue[0].Duration.Value.TotalSeconds)}", false);
                 embed.AddField("Up Next", "Nothing is in the queue. Use ``/play`` to get the party started!");
 
                 await ctx.DeleteResponseAsync();
@@ -364,12 +352,11 @@ namespace DiscordBotTest {
 
             var interactivity = ctx.Client.GetInteractivity();
 
-            var ytdl = new YoutubeDL();
             for (int i = 0; i < paginatedQueue[0].Count; i++) {
-                final += $"{i+1}. [{paginatedQueue[0][i].Title}]({paginatedQueue[0][i].Url}) - {AbstractFunctions.FormatSeconds((float)paginatedQueue[0][i].Duration)}\n";
+                final += $"{i+1}. [{paginatedQueue[0][i].Title}]({paginatedQueue[0][i].Url}) - {AbstractFunctions.FormatSeconds((float)paginatedQueue[0][i].Duration.Value.TotalSeconds)}\n";
             }
 
-            embed.AddField("• Now Playing", $"[{queue[0].Title}]({queue[0].Url}) - {AbstractFunctions.FormatSeconds((float)queue[0].Duration)}", false);
+            embed.AddField("• Now Playing", $"[{queue[0].Title}]({queue[0].Url}) - {AbstractFunctions.FormatSeconds((float)queue[0].Duration.Value.TotalSeconds)}", false);
             embed.AddField("• Up Next", $"{final}");
 
             var backButtonGuid = Guid.NewGuid().ToString();
@@ -399,11 +386,11 @@ namespace DiscordBotTest {
                         page -= 1;
                         final = "";
                         for (int i = 0; i < paginatedQueue[page].Count; i++) {
-                            final += $"{i + 1 + (page * 5)}. [{paginatedQueue[page][i].Title}]({paginatedQueue[page][i].Url}) - {AbstractFunctions.FormatSeconds((float)paginatedQueue[page][i].Duration)}\n";
+                            final += $"{i + 1 + (page * 5)}. [{paginatedQueue[page][i].Title}]({paginatedQueue[page][i].Url}) - {AbstractFunctions.FormatSeconds((float)paginatedQueue[page][i].Duration.Value.TotalSeconds)}\n";
                         }
 
                         embed.ClearFields();
-                        embed.AddField("• Now Playing", $"[{queue[0].Title}]({queue[0].Url}) - {AbstractFunctions.FormatSeconds((float)queue[0].Duration)}", false);
+                        embed.AddField("• Now Playing", $"[{queue[0].Title}]({queue[0].Url}) - {AbstractFunctions.FormatSeconds((float)queue[0].Duration.Value.TotalSeconds)}", false);
                         embed.AddField("• Up Next", $"{final}");
 
                         builder = new DiscordMessageBuilder()
@@ -419,11 +406,11 @@ namespace DiscordBotTest {
                         page += 1;
                         final = "";
                         for (int i = 0; i < paginatedQueue[page].Count; i++) {
-                            final += $"{i + 1 + (page*5)}. [{paginatedQueue[page][i].Title}]({paginatedQueue[page][i].Url}) - {AbstractFunctions.FormatSeconds((float)paginatedQueue[page][i].Duration)}\n";
+                            final += $"{i + 1 + (page*5)}. [{paginatedQueue[page][i].Title}]({paginatedQueue[page][i].Url}) - {AbstractFunctions.FormatSeconds((float)paginatedQueue[page][i].Duration.Value.TotalSeconds)}\n";
                         }
 
                         embed.ClearFields();
-                        embed.AddField("• Now Playing", $"[{queue[0].Title}]({queue[0].Url}) - {AbstractFunctions.FormatSeconds((float)queue[0].Duration)}", false);
+                        embed.AddField("• Now Playing", $"[{queue[0].Title}]({queue[0].Url}) - {AbstractFunctions.FormatSeconds((float)queue[0].Duration.Value.TotalSeconds)}", false);
                         embed.AddField("• Up Next", $"{final}");
 
                         builder = new DiscordMessageBuilder()

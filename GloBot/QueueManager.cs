@@ -1,34 +1,31 @@
-﻿using DSharpPlus;
-using DSharpPlus.Entities;
+﻿using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using DSharpPlus.VoiceNext;
-using System;
+using YoutubeExplode;
+using YoutubeExplode.Videos;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Security.Policy;
 using System.Threading.Tasks;
-using YoutubeDLSharp;
-using YoutubeDLSharp.Metadata;
+using System.Linq;
+using System;
 
 namespace DiscordBotTest {
     internal class QueueManager {
-        public static Dictionary<DiscordGuild, List<VideoData>> queues = new Dictionary<DiscordGuild, List<VideoData>>();
+        public static Dictionary<DiscordGuild, List<Video>> queues = new Dictionary<DiscordGuild, List<Video>>();
         public static Dictionary<DiscordGuild, int> voteSkips = new Dictionary<DiscordGuild, int>();
         public static List<DiscordGuild> paused = new List<DiscordGuild>();
 
         public static void CreateQueue(DiscordGuild guild) {
-            queues[guild] = new List<VideoData>();
+            queues[guild] = new List<Video>();
         }
 
         public static async Task PlayQueue(DiscordGuild guild, DiscordChannel channel) {
-            List<VideoData> queue = queues[guild];
+            List<Video> queue = queues[guild];
             if (queue == null) return;
 
             while (queue.Count > 0) {
-                VideoData video = queue.First();
+                Video video = queue.First();
                 await new DiscordMessageBuilder()
-                    .WithContent($"Now playing [{video.Title}]({video.Url}) - {AbstractFunctions.FormatSeconds((float)video.Duration)}")
+                    .WithContent($"Now playing [{video.Title}]({video.Url}) - {AbstractFunctions.FormatSeconds((float)video.Duration.Value.TotalSeconds)}")
                     .SendAsync(channel);
 
                 var voiceNext = Program.Client.GetVoiceNext();
@@ -57,10 +54,9 @@ namespace DiscordBotTest {
             DiscordGuild guild = context.Guild;
             bool shouldPlayAfter = queues[guild].Count == 0;
 
-            var ytdl = new YoutubeDL();
-            var res = await ytdl.RunVideoDataFetch(url);
-            VideoData video = res.Data;
-            video.Url = url;
+            var youtube = new YoutubeClient();
+            var res = await youtube.Videos.GetAsync(url);
+            Video video = res;
 
             queues[guild].Add(video);
             if (shouldPlayAfter && !forceNoPlay) await PlayQueue(guild, context.Channel);
@@ -84,18 +80,18 @@ namespace DiscordBotTest {
                 AudioManager.ctss.Remove(guild);
         }
 
-        public static List<VideoData> GetQueue(DiscordGuild guild) {
+        public static List<Video> GetQueue(DiscordGuild guild) {
             return queues[guild];
         }
 
-        public static List<List<VideoData>> GetPaginatedQueue(DiscordGuild guild) {
-            List<VideoData> queue = queues[guild];
-            List<List<VideoData>> paginated = new List<List<VideoData>>();
+        public static List<List<Video>> GetPaginatedQueue(DiscordGuild guild) {
+            List<Video> queue = queues[guild];
+            List<List<Video>> paginated = new List<List<Video>>();
             int curPage = 1;
 
             for (int i = 1; i < queue.Count; i++) {
                 if (paginated.Count < curPage) {
-                    paginated.Add(new List<VideoData>());
+                    paginated.Add(new List<Video>());
                 }
 
                 paginated[curPage - 1].Add(queue[i]);

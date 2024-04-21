@@ -1,17 +1,16 @@
-﻿using DiscordBotTest.config;
+﻿using System.Collections.Generic;
+using System;
+using System.Threading.Tasks;
+using DiscordBotTest.config;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using DSharpPlus.SlashCommands;
 using DSharpPlus.VoiceNext;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
 
 namespace DiscordBotTest {
     internal class Program {
-        public static DiscordClient? Client { get; private set; }
+        public static DiscordClient Client { get; private set; }
 
         static async Task Main(string[] args) {
             JSONReader jsonReader = new JSONReader();
@@ -23,11 +22,6 @@ namespace DiscordBotTest {
                 TokenType = TokenType.Bot,
                 AutoReconnect = true
             };
-
-            if (!File.Exists("yt-dlp.exe"))
-                await YoutubeDLSharp.Utils.DownloadYtDlp();
-            if (!File.Exists("ffmpeg.exe"))
-                await YoutubeDLSharp.Utils.DownloadFFmpeg();
 
             Client = new DiscordClient(discordConfig);
             var slash = Client.UseSlashCommands();
@@ -46,7 +40,7 @@ namespace DiscordBotTest {
         }
 
         private static async Task Client_VoiceStateUpdated(DiscordClient sender, VoiceStateUpdateEventArgs args) {
-            DiscordChannel? channel = args.Before?.Channel;
+            DiscordChannel channel = args.Before?.Channel;
             DiscordGuild guild = args.Guild;
 
             if (Client.GetVoiceNext().GetConnection(guild) == null) return;
@@ -69,8 +63,8 @@ namespace DiscordBotTest {
                                 Color = DiscordColor.Lilac,
                                 Author = new DiscordEmbedBuilder.EmbedAuthor() {
                                     Name = "Everybody's gone!",
-                                    IconUrl = Client?.CurrentUser.AvatarUrl,
-                                    Url = Client?.CurrentUser.AvatarUrl
+                                    IconUrl = Client.CurrentUser.AvatarUrl,
+                                    Url = Client.CurrentUser.AvatarUrl
                                 },
                                 Description = $"{channel.Name} has been empty for 5 minutes, so I decided to head out."
                             }).SendAsync(DataHolder.GetLastSpokenChannel(guild));
@@ -99,7 +93,7 @@ namespace DiscordBotTest {
         private static Task Client_Ready(DiscordClient sender, ReadyEventArgs args) {
             sender.UpdateStatusAsync(new DiscordActivity("some tunes!", ActivityType.ListeningTo));
 
-            Console.WriteLine(Client?.CurrentUser.Username + '#' + Client?.CurrentUser.Discriminator + " is ready!");
+            Console.WriteLine(Client.CurrentUser.Username + '#' + Client.CurrentUser.Discriminator + " is ready!");
             return Task.CompletedTask;
         }
     }

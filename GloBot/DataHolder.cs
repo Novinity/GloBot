@@ -1,4 +1,6 @@
-﻿using DSharpPlus.Entities;
+﻿using System.Collections.Generic;
+using System.Linq;
+using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 
 namespace DiscordBotTest {
@@ -30,7 +32,8 @@ namespace DiscordBotTest {
 
         public static List<ulong> AuthorizedServers = new List<ulong>() {
             910992098537402429,
-            1214175327597891594
+            1214175327597891594,
+            1175188756681212017
         };
 
         public static bool DevModeEnabled = true;
@@ -52,7 +55,7 @@ namespace DiscordBotTest {
 
         public static async void ShowDevMessage(InteractionContext ctx) {
             await ctx.CreateResponseAsync(DSharpPlus.InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder()
-                .WithContent("Hey, thanks for adding me! Unfortunately I'm still in development, but don't worry, we'll be up and running soon!\nLearn more here -> https://glo-bot-site.vercel.app/"));
+                .WithContent("Hey, thanks for adding me! Unfortunately I'm still in development, but don't worry, we'll be up and running soon!\nLearn more here -> https://www.glo-bot.site/"));
         }
     }
 
