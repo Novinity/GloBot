@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DiscordBotTest {
+namespace GloBot {
     internal class AbstractFunctions {
         public static string FormatSeconds(float dur) {
             int duration = (int)Math.Round(dur);

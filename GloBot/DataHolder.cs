@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using DSharpPlus.Entities;
+﻿using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 
-namespace DiscordBotTest {
+namespace GloBot {
     internal class DataHolder {
         public static List<string> AdminCommands = new List<string>() {
             "forceskip"
@@ -39,7 +37,7 @@ namespace DiscordBotTest {
         };
 
         public static List<string> DisabledCommands = new List<string>() {
-            "pause", "resume"
+            //"pause", "resume"
         };
 
         public static bool DevModeEnabled = true;

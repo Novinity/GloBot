@@ -9,7 +9,7 @@ using System.Linq;
 using System;
 using System.ComponentModel.Design;
 
-namespace DiscordBotTest {
+namespace GloBot {
     internal class QueueManager {
         public static Dictionary<DiscordGuild, List<Video>> queues = new Dictionary<DiscordGuild, List<Video>>();
         public static Dictionary<DiscordGuild, int> voteSkips = new Dictionary<DiscordGuild, int>();
@@ -50,7 +50,11 @@ namespace DiscordBotTest {
                 }
             }
 
-            await new DiscordMessageBuilder()
+            await Task.Delay(1000);
+            if (queue.Count > 0)
+                PlayQueue(guild, channel);
+            else
+                await new DiscordMessageBuilder()
                     .WithContent($"Queue is finished! Why not keep the tunes going?")
                     .SendAsync(channel);
         }

@@ -2,7 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 
-namespace DiscordBotTest.config {
+namespace GloBot.config {
     internal class JSONReader {
         public string token { get; set; }
         public string prefix { get; set; }

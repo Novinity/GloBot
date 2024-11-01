@@ -7,12 +7,8 @@ using YoutubeExplode;
 using YoutubeExplode.Common;
 using YoutubeExplode.Playlists;
 using YoutubeExplode.Videos;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Linq;
-using System;
 
-namespace DiscordBotTest {
+namespace GloBot {
     internal class SlashCommands : ApplicationCommandModule {
         [SlashCommand("help", "Get a list of commands")]
         public async Task HelpCommand(InteractionContext ctx, [Option("command", "The specific command you want help with")] string command = "") {

@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using System;
 using System.Threading.Tasks;
-using DiscordBotTest.config;
+using GloBot.config;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using DSharpPlus.SlashCommands;
 using DSharpPlus.VoiceNext;
 
-namespace DiscordBotTest {
+namespace GloBot {
     internal class Program {
         public static DiscordClient Client { get; private set; }
 
