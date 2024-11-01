@@ -19,7 +19,7 @@ namespace GloBot {
 
             if (DataHolder.DisabledCommands.Contains(ctx.CommandName)) {
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                    new DiscordInteractionResponseBuilder().WithContent("This command is currently disabled.").AsEphemeral(true));
+                    new DiscordInteractionResponseBuilder().WithContent("This command is currently disabled.").AsEphemeral());
                 return;
             }
 
@@ -52,7 +52,7 @@ namespace GloBot {
                 if (!DataHolder.FullCommandList.Contains(command)) {
                     await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder()
                         .WithContent("That command does not exist!")
-                        .AsEphemeral(true));
+                        .AsEphemeral());
                     return;
                 }
 
@@ -76,7 +76,7 @@ namespace GloBot {
                     if (e.Id == allCommandsId) {
                         await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder()
                             .AddEmbed(allCommandsEmbed)
-                            .AsEphemeral(true));
+                            .AsEphemeral());
                     }
                 };
 
@@ -111,7 +111,7 @@ namespace GloBot {
                 if (e.Id == viewAllCommandsId) {
                     await e.Interaction.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder()
                         .AddEmbed(allCommandsEmbed)
-                        .AsEphemeral(true));
+                        .AsEphemeral());
                 }
             };
 
@@ -133,7 +133,7 @@ namespace GloBot {
 
             if (DataHolder.DisabledCommands.Contains(ctx.CommandName)) {
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                    new DiscordInteractionResponseBuilder().WithContent("This command is currently disabled.").AsEphemeral(true));
+                    new DiscordInteractionResponseBuilder().WithContent("This command is currently disabled.").AsEphemeral());
                 return;
             }
 
@@ -164,7 +164,7 @@ namespace GloBot {
 
             if (DataHolder.DisabledCommands.Contains(ctx.CommandName)) {
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                    new DiscordInteractionResponseBuilder().WithContent("This command is currently disabled.").AsEphemeral(true));
+                    new DiscordInteractionResponseBuilder().WithContent("This command is currently disabled.").AsEphemeral());
                 return;
             }
 
@@ -205,7 +205,7 @@ namespace GloBot {
 
             if (DataHolder.DisabledCommands.Contains(ctx.CommandName)) {
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                    new DiscordInteractionResponseBuilder().WithContent("This command is currently disabled.").AsEphemeral(true));
+                    new DiscordInteractionResponseBuilder().WithContent("This command is currently disabled.").AsEphemeral());
                 return;
             }
 
@@ -270,8 +270,6 @@ namespace GloBot {
                         }
                         await QueueManager.PlayQueue(ctx.Guild, ctx.Channel);
                     }
-                    return;
-
                 }
                 else {
 
@@ -287,7 +285,6 @@ namespace GloBot {
             } catch (Exception e) {
                 Console.WriteLine(e.ToString());
                 await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Something went wrong!"));
-                return;
             }
         }
 
@@ -300,7 +297,7 @@ namespace GloBot {
 
             if (DataHolder.DisabledCommands.Contains(ctx.CommandName)) {
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                    new DiscordInteractionResponseBuilder().WithContent("This command is currently disabled.").AsEphemeral(true));
+                    new DiscordInteractionResponseBuilder().WithContent("This command is currently disabled.").AsEphemeral());
                 return;
             }
 
@@ -340,7 +337,7 @@ namespace GloBot {
 
             if (DataHolder.DisabledCommands.Contains(ctx.CommandName)) {
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                    new DiscordInteractionResponseBuilder().WithContent("This command is currently disabled.").AsEphemeral(true));
+                    new DiscordInteractionResponseBuilder().WithContent("This command is currently disabled.").AsEphemeral());
                 return;
             }
 
@@ -476,7 +473,7 @@ namespace GloBot {
 
             if (DataHolder.DisabledCommands.Contains(ctx.CommandName)) {
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                    new DiscordInteractionResponseBuilder().WithContent("This command is currently disabled.").AsEphemeral(true));
+                    new DiscordInteractionResponseBuilder().WithContent("This command is currently disabled.").AsEphemeral());
                 return;
             }
 
@@ -542,7 +539,7 @@ namespace GloBot {
 
             if (DataHolder.DisabledCommands.Contains(ctx.CommandName)) {
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                    new DiscordInteractionResponseBuilder().WithContent("This command is currently disabled.").AsEphemeral(true));
+                    new DiscordInteractionResponseBuilder().WithContent("This command is currently disabled.").AsEphemeral());
                 return;
             }
 
@@ -577,7 +574,7 @@ namespace GloBot {
                 if (!allowed) {
                     await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
                         new DiscordInteractionResponseBuilder().WithContent("You can't do this! You either need the ``Mute Members`` permission or a role named \"DJ\"!")
-                        .AsEphemeral(true));
+                        .AsEphemeral());
                     return;
                 }
             }
@@ -603,7 +600,7 @@ namespace GloBot {
 
             if (DataHolder.DisabledCommands.Contains(ctx.CommandName)) {
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                    new DiscordInteractionResponseBuilder().WithContent("This command is currently disabled.").AsEphemeral(true));
+                    new DiscordInteractionResponseBuilder().WithContent("This command is currently disabled.").AsEphemeral());
                 return;
             }
 
@@ -658,7 +655,7 @@ namespace GloBot {
 
             if (DataHolder.DisabledCommands.Contains(ctx.CommandName)) {
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                    new DiscordInteractionResponseBuilder().WithContent("This command is currently disabled.").AsEphemeral(true));
+                    new DiscordInteractionResponseBuilder().WithContent("This command is currently disabled.").AsEphemeral());
                 return;
             }
 
@@ -704,7 +701,7 @@ namespace GloBot {
 
             if (DataHolder.DisabledCommands.Contains(ctx.CommandName)) {
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                    new DiscordInteractionResponseBuilder().WithContent("This command is currently disabled.").AsEphemeral(true));
+                    new DiscordInteractionResponseBuilder().WithContent("This command is currently disabled.").AsEphemeral());
                 return;
             }
 
@@ -751,7 +748,7 @@ namespace GloBot {
 
             if (DataHolder.DisabledCommands.Contains(ctx.CommandName)) {
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                    new DiscordInteractionResponseBuilder().WithContent("This command is currently disabled.").AsEphemeral(true));
+                    new DiscordInteractionResponseBuilder().WithContent("This command is currently disabled.").AsEphemeral());
                 return;
             }
 
@@ -799,7 +796,7 @@ namespace GloBot {
 
             if (DataHolder.DisabledCommands.Contains(ctx.CommandName)) {
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                    new DiscordInteractionResponseBuilder().WithContent("This command is currently disabled.").AsEphemeral(true));
+                    new DiscordInteractionResponseBuilder().WithContent("This command is currently disabled.").AsEphemeral());
                 return;
             }
 
@@ -846,7 +843,7 @@ namespace GloBot {
 
             if (DataHolder.DisabledCommands.Contains(ctx.CommandName)) {
                 await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource,
-                    new DiscordInteractionResponseBuilder().WithContent("This command is currently disabled.").AsEphemeral(true));
+                    new DiscordInteractionResponseBuilder().WithContent("This command is currently disabled.").AsEphemeral());
                 return;
             }
 
